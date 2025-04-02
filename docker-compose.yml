@@ -19,6 +19,20 @@ services:
       timeout: 10s
       retries: 10
 
+  command: >
+    cqlsh cassandra -e "
+    CREATE KEYSPACE IF NOT EXISTS redirect_keyspace 
+    WITH REPLICATION = { 
+      'class' : 'SimpleStrategy', 
+      'replication_factor' : 1 
+    }; 
+    USE redirect_keyspace;
+    CREATE TABLE IF NOT EXISTS short_url_entity (
+      short_key text PRIMARY KEY,
+      original_url text,
+      expiration_time bigint
+    );"      
+
   shortener-service:
     build:
       context: ./shorturl2
