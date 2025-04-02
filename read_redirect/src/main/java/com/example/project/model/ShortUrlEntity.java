@@ -1,15 +1,19 @@
 package com.example.project.model;
 
+import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
 @Table("short_url_entity")
 public class ShortUrlEntity {
 
-    @PrimaryKey
+    @PrimaryKey("short_key")
     private String shortKey;
 
+    @Column("original_url")
     private String originalUrl;
+
+    @Column("expiration_time")
     private long expirationTime;
 
     public ShortUrlEntity() {}

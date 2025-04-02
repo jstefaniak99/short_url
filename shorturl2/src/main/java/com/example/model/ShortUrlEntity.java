@@ -7,7 +7,7 @@ import org.springframework.data.cassandra.core.mapping.Table;
 @Table("short_url_entity")
 public class ShortUrlEntity {
 
-    @PrimaryKey("short_key")
+    @PrimaryKey
     private String shortKey;
 
     @Column("original_url")
