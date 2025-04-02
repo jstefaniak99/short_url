@@ -2,7 +2,7 @@ Wykonujemy w głównym katalogu, aby zbudować kontenery:
 docker-compose up --build
 
 Skracamy podany przez nas url, który zapisuje się w bazie danych
-curl -X POST http://localhost:8081/shorten -H "Content-Type: application/json" -d '{"url":"https://www.wp.pl"}'
+curl -X POST http://localhost:8081/shorten -H "Content-Type: application/json" -d "{\"url\":\"https://www.wp.pl\"}"
 
 Otwieramy skrócony link:
 curl -v http://localhost:8082/[wpisujemy wygenerowany base62]
