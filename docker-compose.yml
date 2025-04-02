@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  cassandra:
+    image: cassandra:3.11.8
+    container_name: cassandra
+    ports:
+      - "9042:9042"
+    environment:
+      CASSANDRA_CLUSTER_NAME: RedirectCluster
+      CASSANDRA_DC: datacenter1
+      CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
+      CASSANDRA_SEEDS: cassandra
+      MAX_HEAP_SIZE: 1024M
+      HEAP_NEWSIZE: 256M
+    healthcheck:
+      test: ["CMD", "cqlsh", "-e", "describe keyspaces"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
+  shortener-service:
+    build:
+      context: ./shorturl2
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    environment:
+      SPRING_DATA_CASSANDRA_CONTACT_POINTS: cassandra
+      SPRING_DATA_CASSANDRA_KEYSPACE_NAME: redirect_keyspace
+      SPRING_DATA_CASSANDRA_LOCAL_DATACENTER: datacenter1
+
+  redirect-service:
+    build:
+      context: ./read_redirect
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    environment:
+      SPRING_DATA_CASSANDRA_CONTACT_POINTS: cassandra
+      SPRING_DATA_CASSANDRA_KEYSPACE_NAME: redirect_keyspace
+      SPRING_DATA_CASSANDRA_LOCAL_DATACENTER: datacenter1
