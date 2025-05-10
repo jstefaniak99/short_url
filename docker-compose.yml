@@ -33,7 +33,9 @@ services:
       CREATE TABLE IF NOT EXISTS short_url_entity (
         short_key text PRIMARY KEY,
         original_url text,
-        expiration_time bigint
+        expiration_time bigint,
+        creation_time bigint,
+        last_access_time bigint
       );"      
 
   shortener-service:
@@ -56,6 +58,20 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8082:8082"
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    environment:
+      SPRING_DATA_CASSANDRA_CONTACT_POINTS: cassandra
+      SPRING_DATA_CASSANDRA_KEYSPACE_NAME: redirect_keyspace
+      SPRING_DATA_CASSANDRA_LOCAL_DATACENTER: datacenter1
+      
+  cleanup-service:
+    build:
+      context: ./cleanup_service
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
     depends_on:
       cassandra:
         condition: service_healthy

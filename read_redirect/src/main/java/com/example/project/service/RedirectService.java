@@ -22,6 +22,11 @@ public class RedirectService {
             repository.delete(entity);
             return null;
         }
+
+        // Aktualizacja czasu ostatniego dostępu
+        entity.updateLastAccessTime();
+        repository.save(entity);
+
         return entity.getOriginalUrl();
     }
 }
