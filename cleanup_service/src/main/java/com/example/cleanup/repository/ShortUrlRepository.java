@@ -15,4 +15,6 @@ public interface ShortUrlRepository extends CassandraRepository<ShortUrlEntity, 
 
     @Query("SELECT * FROM short_url_entity WHERE last_access_time < ?0 ALLOW FILTERING")
     List<ShortUrlEntity> findAllWithLastAccessTimeBefore(long timestamp);
+
+
 }

@@ -20,7 +20,7 @@ public class CleanupScheduler {
         this.cleanupService = cleanupService;
     }
 
-    @Scheduled(cron = "${cleanup.schedule:0 0 1 * * ?}") // Domyślnie uruchamia się codziennie o 1:00 AM
+    @Scheduled(cron = "${cleanup.schedule:0 0 1 * * ?}") // Domyślnie uruchamia się codziennie o 1:00
     public void scheduledCleanup() {
         if (!cleanupEnabled) {
             logger.info("Cleanup is disabled, skipping scheduled execution");
