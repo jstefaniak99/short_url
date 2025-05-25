@@ -29,6 +29,6 @@ public class CleanupScheduler {
 
         logger.info("Starting scheduled cleanup task");
         int deletedCount = cleanupService.cleanupOldUrls();
-        logger.info("Scheduled cleanup completed. Deleted {} expired URLs", deletedCount);
+
     }
 }

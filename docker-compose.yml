@@ -5,12 +5,15 @@ services:
     ports:
       - "9042:9042"
     environment:
-      CASSANDRA_CLUSTER_NAME: RedirectCluster
-      CASSANDRA_DC: datacenter1
-      CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
-      CASSANDRA_SEEDS: cassandra
-      MAX_HEAP_SIZE: 1024M
-      HEAP_NEWSIZE: 256M
+      - TZ=Europe/Warsaw
+      - CASSANDRA_CLUSTER_NAME=RedirectCluster
+      - CASSANDRA_DC=datacenter1
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - CASSANDRA_SEEDS=cassandra
+      - MAX_HEAP_SIZE=1024M
+      - HEAP_NEWSIZE=256M
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
     healthcheck:
       test: ["CMD", "cqlsh", "-e", "describe keyspaces"]
       interval: 15s
@@ -22,6 +25,10 @@ services:
     depends_on:
       cassandra:
         condition: service_healthy
+    environment:
+      - TZ=Europe/Warsaw
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
     command: >
       cqlsh cassandra -e "
       CREATE KEYSPACE IF NOT EXISTS redirect_keyspace 
@@ -36,7 +43,7 @@ services:
         expiration_time bigint,
         creation_time bigint,
         last_access_time bigint
-      );"      
+      );"
 
   shortener-service:
     build:
@@ -48,9 +55,12 @@ services:
       cassandra:
         condition: service_healthy
     environment:
-      SPRING_DATA_CASSANDRA_CONTACT_POINTS: cassandra
-      SPRING_DATA_CASSANDRA_KEYSPACE_NAME: redirect_keyspace
-      SPRING_DATA_CASSANDRA_LOCAL_DATACENTER: datacenter1
+      - TZ=Europe/Warsaw
+      - SPRING_DATA_CASSANDRA_CONTACT_POINTS=cassandra
+      - SPRING_DATA_CASSANDRA_KEYSPACE_NAME=redirect_keyspace
+      - SPRING_DATA_CASSANDRA_LOCAL_DATACENTER=datacenter1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
 
   redirect-service:
     build:
@@ -62,10 +72,13 @@ services:
       cassandra:
         condition: service_healthy
     environment:
-      SPRING_DATA_CASSANDRA_CONTACT_POINTS: cassandra
-      SPRING_DATA_CASSANDRA_KEYSPACE_NAME: redirect_keyspace
-      SPRING_DATA_CASSANDRA_LOCAL_DATACENTER: datacenter1
-      
+      - TZ=Europe/Warsaw
+      - SPRING_DATA_CASSANDRA_CONTACT_POINTS=cassandra
+      - SPRING_DATA_CASSANDRA_KEYSPACE_NAME=redirect_keyspace
+      - SPRING_DATA_CASSANDRA_LOCAL_DATACENTER=datacenter1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+
   cleanup-service:
     build:
       context: ./cleanup_service
@@ -76,6 +89,9 @@ services:
       cassandra:
         condition: service_healthy
     environment:
-      SPRING_DATA_CASSANDRA_CONTACT_POINTS: cassandra
-      SPRING_DATA_CASSANDRA_KEYSPACE_NAME: redirect_keyspace
-      SPRING_DATA_CASSANDRA_LOCAL_DATACENTER: datacenter1
+      - TZ=Europe/Warsaw
+      - SPRING_DATA_CASSANDRA_CONTACT_POINTS=cassandra
+      - SPRING_DATA_CASSANDRA_KEYSPACE_NAME=redirect_keyspace
+      - SPRING_DATA_CASSANDRA_LOCAL_DATACENTER=datacenter1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
