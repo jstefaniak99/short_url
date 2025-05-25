@@ -17,12 +17,19 @@ public class ShortUrlService {
     private long ttlSeconds;
 
     private final ShortUrlRepository repository;
+    private final SimpleBlockedUrlListener blockedUrlListener;
 
-    public ShortUrlService(ShortUrlRepository repository) {
+    public ShortUrlService(ShortUrlRepository repository, SimpleBlockedUrlListener blockedUrlListener) {
         this.repository = repository;
+        this.blockedUrlListener = blockedUrlListener;
     }
 
     public String shortenUrl(String originalUrl) {
+        // 🚨 SPRAWDŹ CZY URL JEST ZABLOKOWANY
+        if (blockedUrlListener.isUrlBlocked(originalUrl)) {
+            throw new RuntimeException("URL jest zablokowany przez system bezpieczeństwa: " + originalUrl);
+        }
+
         // Wygenerowanie klucza
         String shortKey = generateBase62Hash(originalUrl);
 
@@ -43,14 +50,21 @@ public class ShortUrlService {
             return null;
         }
         ShortUrlEntity entity = entityOpt.get();
+
         // Sprawdza, czy nie wygasł
         if (System.currentTimeMillis() > entity.getExpirationTime()) {
             repository.delete(entity); // usuwamy, bo wygasł
             return null;
         }
+
+        // 🚨 SPRAWDŹ CZY URL NIE ZOSTAŁ ZABLOKOWANY W MIĘDZYCZASIE
+        if (blockedUrlListener.isUrlBlocked(entity.getOriginalUrl())) {
+            repository.delete(entity); // usuń zablokowany URL
+            return null;
+        }
+
         return entity.getOriginalUrl();
     }
-
 
     private String generateBase62Hash(String originalUrl) {
         try {

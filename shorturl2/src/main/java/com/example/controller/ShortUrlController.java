@@ -24,10 +24,22 @@ public class ShortUrlController {
     public ResponseEntity<Map<String, String>> shortenUrl(@RequestBody Map<String, String> request) {
         String originalUrl = request.get("url");
         if (originalUrl == null || originalUrl.isBlank()) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "URL cannot be empty"));
         }
-        // Wywołanie serwisu
-        String shortUrl = shortUrlService.shortenUrl(originalUrl);
-        return ResponseEntity.ok(Map.of("shortUrl", shortUrl));
+
+        try {
+            // Wywołanie serwisu
+            String shortUrl = shortUrlService.shortenUrl(originalUrl);
+            return ResponseEntity.ok(Map.of("shortUrl", shortUrl));
+        } catch (IllegalArgumentException e) {
+            // Obsługa błędu związanego ze słowami zakazanymi
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            // Obsługa innych błędów
+            return ResponseEntity.internalServerError()
+                    .body(Map.of("error", "Internal server error"));
+        }
     }
 }

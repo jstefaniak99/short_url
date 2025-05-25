@@ -1,4 +1,28 @@
 services:
+  # Kafka services
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
+
   cassandra:
     image: cassandra:3.11.8
     container_name: cassandra
@@ -54,11 +78,14 @@ services:
     depends_on:
       cassandra:
         condition: service_healthy
+      kafka:
+        condition: service_started
     environment:
       - TZ=Europe/Warsaw
       - SPRING_DATA_CASSANDRA_CONTACT_POINTS=cassandra
       - SPRING_DATA_CASSANDRA_KEYSPACE_NAME=redirect_keyspace
       - SPRING_DATA_CASSANDRA_LOCAL_DATACENTER=datacenter1
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
     volumes:
       - /etc/localtime:/etc/localtime:ro
 

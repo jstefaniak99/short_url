@@ -17,11 +17,14 @@ dependencies {
 
     // Cassandra zamiast PostgreSQL i JPA
     implementation 'org.springframework.boot:spring-boot-starter-data-cassandra'
+    
+    // Kafka
+    implementation 'org.springframework.kafka:spring-kafka'
+    
+    // Jackson dla JSON
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
 }
