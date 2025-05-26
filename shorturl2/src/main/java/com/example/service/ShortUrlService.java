@@ -35,7 +35,6 @@ public class ShortUrlService {
     public String shortenUrl(String originalUrl) {
         logger.info("Attempting to shorten URL: {}", originalUrl);
 
-        // 🚨 SPRAWDŹ CZY URL ZAWIERA SŁOWA ZAKAZANE
         if (forbiddenWordService.checkAndAlertIfForbidden(originalUrl)) {
             Optional<String> forbiddenWord = forbiddenWordService.checkForForbiddenWords(originalUrl);
             String message = String.format("URL zawiera zakazane słowo: '%s' - %s",
@@ -44,20 +43,16 @@ public class ShortUrlService {
             throw new IllegalArgumentException(message);
         }
 
-        // 🚨 SPRAWDŹ CZY URL JEST ZABLOKOWANY
         if (blockedUrlListener.isUrlBlocked(originalUrl)) {
             logger.warn("Rejected blocked URL: {}", originalUrl);
             throw new IllegalArgumentException("URL jest zablokowany przez system bezpieczeństwa: " + originalUrl);
         }
 
-        // Wygenerowanie klucza
         String shortKey = generateBase62Hash(originalUrl);
         logger.debug("Generated short key: {} for URL: {}", shortKey, originalUrl);
 
-        // Obliczenie czasu wygaśnięcia
         long expirationTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(ttlSeconds);
 
-        // Zapis do bazy
         ShortUrlEntity entity = new ShortUrlEntity(shortKey, originalUrl, expirationTime);
         repository.save(entity);
 
@@ -85,14 +80,12 @@ public class ShortUrlService {
             return null;
         }
 
-        // 🚨 SPRAWDŹ CZY URL NIE ZOSTAŁ ZABLOKOWANY W MIĘDZYCZASIE
         if (blockedUrlListener.isUrlBlocked(entity.getOriginalUrl())) {
             logger.warn("URL became blocked, deleting short URL: {}", entity.getOriginalUrl());
             repository.delete(entity);
             return null;
         }
-
-        // 🚨 SPRAWDŹ CZY URL NIE ZAWIERA TERAZ SŁÓW ZAKAZANYCH (mogły się zmienić)
+        
         if (forbiddenWordService.checkAndAlertIfForbidden(entity.getOriginalUrl())) {
             logger.warn("URL contains forbidden words, deleting short URL: {}", entity.getOriginalUrl());
             repository.delete(entity);

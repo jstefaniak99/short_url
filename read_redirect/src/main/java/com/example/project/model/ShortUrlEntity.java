@@ -32,7 +32,6 @@ public class ShortUrlEntity {
         this.lastAccessTime = this.creationTime;
     }
 
-    // Getters and Setters
     public String getShortKey() {
         return shortKey;
     }

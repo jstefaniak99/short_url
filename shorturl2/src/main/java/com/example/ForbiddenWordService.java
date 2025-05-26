@@ -29,10 +29,7 @@ public class ForbiddenWordService {
         this.forbiddenWords = initializeForbiddenWords();
     }
 
-    /**
-     * Inicjalizuje listę słów zakazanych.
-     * Można to przenieść do konfiguracji external lub bazy danych.
-     */
+
     private Set<String> initializeForbiddenWords() {
         Set<String> words = new HashSet<>();
         // Przykładowe słowa zakazane
@@ -43,19 +40,12 @@ public class ForbiddenWordService {
         words.add("virus");
         words.add("scam");
         words.add("hack");
-        words.add("porn");
-        words.add("adult");
-        words.add("gambling");
+
 
         logger.info("Initialized forbidden words list with {} words", words.size());
         return words;
     }
 
-    /**
-     * Sprawdza czy URL zawiera słowa zakazane
-     * @param url URL do sprawdzenia
-     * @return Optional z pierwszym znalezionym słowem zakazanym lub empty
-     */
     public Optional<String> checkForForbiddenWords(String url) {
         if (url == null || url.isBlank()) {
             return Optional.empty();
@@ -69,11 +59,6 @@ public class ForbiddenWordService {
                 .findFirst();
     }
 
-    /**
-     * Wysyła wiadomość na Kafkę o znalezieniu słowa zakazanego
-     * @param url Oryginalny URL
-     * @param forbiddenWord Znalezione słowo zakazane
-     */
     public void sendForbiddenWordAlert(String url, String forbiddenWord) {
         try {
             Map<String, Object> alertData = new HashMap<>();
@@ -95,18 +80,13 @@ public class ForbiddenWordService {
                         }
                     });
 
-            logger.warn("🚨 FORBIDDEN WORD ALERT - Word '{}' detected in URL: {}", forbiddenWord, url);
+            logger.warn("FORBIDDEN WORD ALERT - Word '{}' detected in URL: {}", forbiddenWord, url);
 
         } catch (Exception e) {
             logger.error("Error preparing forbidden word alert for Kafka", e);
         }
     }
 
-    /**
-     * Sprawdza URL i wysyła alert jeśli znajdzie słowo zakazane
-     * @param url URL do sprawdzenia
-     * @return true jeśli znaleziono słowo zakazane, false w przeciwnym przypadku
-     */
     public boolean checkAndAlertIfForbidden(String url) {
         Optional<String> forbiddenWord = checkForForbiddenWords(url);
         if (forbiddenWord.isPresent()) {
@@ -116,10 +96,6 @@ public class ForbiddenWordService {
         return false;
     }
 
-    /**
-     * Dodaje nowe słowo zakazane do listy
-     * @param word Słowo do dodania
-     */
     public void addForbiddenWord(String word) {
         if (word != null && !word.isBlank()) {
             String normalizedWord = word.toLowerCase().trim();
@@ -131,10 +107,6 @@ public class ForbiddenWordService {
         }
     }
 
-    /**
-     * Usuwa słowo zakazane z listy
-     * @param word Słowo do usunięcia
-     */
     public void removeForbiddenWord(String word) {
         if (word != null) {
             String normalizedWord = word.toLowerCase().trim();
@@ -145,11 +117,7 @@ public class ForbiddenWordService {
             }
         }
     }
-
-    /**
-     * Zwraca aktualną listę słów zakazanych
-     * @return Set słów zakazanych
-     */
+    
     public Set<String> getForbiddenWords() {
         return new HashSet<>(forbiddenWords);
     }
