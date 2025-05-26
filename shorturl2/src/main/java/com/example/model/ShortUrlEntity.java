@@ -71,8 +71,4 @@ public class ShortUrlEntity {
     public void setLastAccessTime(long lastAccessTime) {
         this.lastAccessTime = lastAccessTime;
     }
-
-    public void updateLastAccessTime() {
-        this.lastAccessTime = System.currentTimeMillis();
-    }
 }
