@@ -205,9 +205,7 @@ Sprawdź czy serwisy są dostępne:
 
 ```bash
 # Skróć zwykły URL
-curl -X POST http://localhost:8081/shorten \
-  -H "Content-Type: application/json" \
-  -d '{"url":"https://www.wp.pl"}'
+curl -X POST http://localhost:8081/shorten -H "Content-Type: application/json" -d "{\"url\":\"https://www.wp.pl\"}"
 
 # Odpowiedź:
 {"shortUrl":"http://localhost:8081/AbCdEf"}
@@ -217,9 +215,7 @@ curl -X POST http://localhost:8081/shorten \
 
 ```bash
 # Próba skrócenia URL-a z zakazanym słowem
-curl -X POST http://localhost:8081/shorten \
-  -H "Content-Type: application/json" \
-  -d '{"url":"https://www.onet.pl"}'
+curl -X POST http://localhost:8081/shorten -H "Content-Type: application/json" -d "{\"url\":\"https://www.onet.pl\"}"
 
 # Odpowiedź:
 {"error":"URL zawiera zakazane słowo: 'onet' - https://www.onet.pl"}
