@@ -236,10 +236,7 @@ curl -v http://localhost:8082/AbCdEf
 
 ```bash
 # Sprawdź alerty o zakazanych słowach
-docker exec -it kafka kafka-console-consumer \
-  --bootstrap-server localhost:9092 \
-  --topic forbidden-words-topic \
-  --from-beginning
+docker exec -it kafka kafka-console-consumer --bootstrap-server localhost:9092 --topic forbidden-words-topic --from-beginning
 ```
 
 ### 5. Podgląd danych w Cassandrze
@@ -260,10 +257,12 @@ SELECT * FROM short_url_entity;
 
 ```bash
 # Obserwuj logi cleanup service
-docker logs -f cleanup-service
+docker logs -f short_url-cleanup-service-1
+JEŻELI JEST PROBLEM ZOBACZ CZY NIE MA INNEJ NAZWY USŁUGA !!! -.-
 
 # Co minutę zobaczysz:
-# "DB shrank by X rows in last cleanup (Y → Z)"
+# "DB shrank by 3 rows in last cleanup (3 → 0)"
+Czyli można to czytać, że 3 wpisy zostały usunięte i teraz nie ma żadnego rekordu w tabeli
 ```
 
 ### 7. Test wygasania linków
