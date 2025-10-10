@@ -9,3 +9,5 @@ curl -v http://localhost:8082/[wpisujemy wygenerowany base62]
 
 Sprawdzanie zablokowanych słów
 docker exec -it kafka kafka-console-consumer --bootstrap-server localhost:9092 --topic forbidden-words-topic --from-beginning
+
+tak.
