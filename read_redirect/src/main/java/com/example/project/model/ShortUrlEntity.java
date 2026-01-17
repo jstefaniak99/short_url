@@ -16,12 +16,20 @@ public class ShortUrlEntity {
     @Column("expiration_time")
     private long expirationTime;
 
+    @Column("creation_time")
+    private long creationTime;
+
+    @Column("last_access_time")
+    private long lastAccessTime;
+
     public ShortUrlEntity() {}
 
     public ShortUrlEntity(String shortKey, String originalUrl, long expirationTime) {
         this.shortKey = shortKey;
         this.originalUrl = originalUrl;
         this.expirationTime = expirationTime;
+        this.creationTime = System.currentTimeMillis();
+        this.lastAccessTime = this.creationTime;
     }
 
     public String getShortKey() {
@@ -46,5 +54,28 @@ public class ShortUrlEntity {
 
     public void setExpirationTime(long expirationTime) {
         this.expirationTime = expirationTime;
+    }
+
+    public long getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(long creationTime) {
+        this.creationTime = creationTime;
+    }
+
+    public long getLastAccessTime() {
+        return lastAccessTime;
+    }
+
+    public void setLastAccessTime(long lastAccessTime) {
+        this.lastAccessTime = lastAccessTime;
+    }
+
+    /**
+     * Helper method to update last access time to current timestamp
+     */
+    public void updateLastAccessTime() {
+        this.lastAccessTime = System.currentTimeMillis();
     }
 }

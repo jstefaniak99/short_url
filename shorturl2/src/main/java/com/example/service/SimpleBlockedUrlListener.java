@@ -13,12 +13,9 @@ public class SimpleBlockedUrlListener {
 
     private static final Logger logger = LoggerFactory.getLogger(SimpleBlockedUrlListener.class);
 
-    // Prosta lista zablokowanych URL-i
+    // Prosta lista zablokowanych URL
     private final Set<String> blockedUrls = ConcurrentHashMap.newKeySet();
 
-    /**
-     * Słucha prostych wiadomości w formacie: "BLOCKED: http://malicious.com"
-     */
     @KafkaListener(topics = "blocked-urls", groupId = "url-shortener-group")
     public void handleBlockedUrlMessage(String message) {
         logger.info("Kafka message: {}", message);
@@ -33,16 +30,10 @@ public class SimpleBlockedUrlListener {
         }
     }
 
-    /**
-     * Sprawdza czy URL jest zablokowany
-     */
     public boolean isUrlBlocked(String url) {
         return blockedUrls.contains(url);
     }
 
-    /**
-     * Wyciąga URL z wiadomości - bardzo prosty parser
-     */
     private String extractUrl(String message) {
         // Szuka http:// lub https://
         String[] words = message.split("\\s+");
@@ -52,7 +43,7 @@ public class SimpleBlockedUrlListener {
             }
         }
 
-        // Alternatywnie - regex
+        // regex
         java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("https?://[^\\s]+");
         java.util.regex.Matcher matcher = pattern.matcher(message);
         if (matcher.find()) {
@@ -62,9 +53,6 @@ public class SimpleBlockedUrlListener {
         return null;
     }
 
-    /**
-     * Zwraca wszystkie zablokowane URL-e (do debugowania)
-     */
     public Set<String> getBlockedUrls() {
         return new java.util.HashSet<>(blockedUrls);
     }

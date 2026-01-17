@@ -17,20 +17,11 @@ public class ForbiddenWordsController {
         this.forbiddenWordService = forbiddenWordService;
     }
 
-    /**
-     * Pobranie listy słów zakazanych
-     * GET /admin/forbidden-words
-     */
     @GetMapping
     public ResponseEntity<Set<String>> getForbiddenWords() {
         return ResponseEntity.ok(forbiddenWordService.getForbiddenWords());
     }
 
-    /**
-     * Dodanie nowego słowa zakazanego
-     * POST /admin/forbidden-words
-     * Body: { "word": "example" }
-     */
     @PostMapping
     public ResponseEntity<Map<String, String>> addForbiddenWord(@RequestBody Map<String, String> request) {
         String word = request.get("word");
@@ -41,11 +32,7 @@ public class ForbiddenWordsController {
         forbiddenWordService.addForbiddenWord(word);
         return ResponseEntity.ok(Map.of("message", "Word added successfully", "word", word));
     }
-
-    /**
-     * Usunięcie słowa zakazanego
-     * DELETE /admin/forbidden-words/{word}
-     */
+    
     @DeleteMapping("/{word}")
     public ResponseEntity<Map<String, String>> removeForbiddenWord(@PathVariable String word) {
         forbiddenWordService.removeForbiddenWord(word);
